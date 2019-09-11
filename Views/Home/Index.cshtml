@@ -1,0 +1,524 @@
+﻿@model BarberReservationSystem.ViewModels.MainPageViewModel
+@{
+    ViewBag.Title = "Home Page";
+}
+<style>
+    .customContainer {
+        margin-top: 40px;
+    }
+
+    .serviceType {
+        display: inline !important;
+    }
+
+    .checked {
+        color: orange;
+    }
+
+    #options {
+        padding: 19px;
+        width: inherit;
+        background: white;
+        border-radius: 8px;
+        box-shadow: grey -2px 6px 6px;
+    }
+
+    #selector {
+        font-weight: bolder;
+        color: green;
+    }
+
+    .submitBtn {
+        border-radius: 15px !important;
+        margin-top: 53px;
+        border: none;
+        box-shadow: 2px 3px 4px darkgrey;
+    }
+
+    label {
+        font-size: 20px;
+        display: inline;
+    }
+
+    #thead {
+        background: #43a047 !important;
+        color: white;
+    }
+
+    .alert {
+        display: none;
+    }
+
+    .customCard {
+        box-shadow: 2px 3px 4px darkgrey;
+    }
+
+    .scheduled {
+        background: lightgrey;
+        color: black;
+        padding: 15px;
+        text-align: center;
+        border: 5px dotted black;
+        border-radius: 10px;
+    }
+
+    .cancelled {
+        background: #dc3545;
+        color: black;
+        padding: 15px;
+        text-align: center;
+        border: 5px dotted black;
+        border-radius: 10px;
+    }
+
+    .inProgress {
+        background: orange;
+        color: black;
+        padding: 15px;
+        text-align: center;
+        border: 5px dotted black;
+        border-radius: 10px;
+    }
+
+    .delivered {
+        background: green;
+        color: white;
+        padding: 15px;
+        text-align: center;
+        border: 5px dotted black;
+        border-radius: 10px;
+    }
+
+    .shadowed {
+        box-shadow: 2px 4px 12px -1px grey;
+    }
+</style>
+
+@Html.Partial("Navigation", Model.currentUser)
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Rate your experience</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    @foreach (var service in Model.services)
+                    {
+                        <tr>
+                            <td>
+                                <label for="">
+                                    @service.name
+                                    <span class="fa fa-star input clicked" role="@service.name"></span>
+                                    <span class="fa fa-star input clicked" role="@service.name"></span>
+                                    <span class="fa fa-star input clicked" role="@service.name"></span>
+                                    <span class="fa fa-star input clicked" role="@service.name"></span>
+                                    <span class="fa fa-star input clicked" role="@service.name"></span>
+                                </label>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="saveRatings">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    <input type="hidden" id="uid" value="@Model.currentUser.userId" />
+    <input type="hidden" id="uname" value="@Model.currentUser.userName" />
+    <input type="hidden" id="dp" value="@Model.currentUser.dp" />
+</div>
+
+<div class="container customContainer">
+    <div class="alert alert-success alert-dismissible">
+
+        <strong>Success!</strong> Your appointment is scheduled successfuly.
+    </div>
+
+    <div class="alert alert-danger alert-dismissible">
+
+        <strong>Invalid !</strong> <span id="errMsg">Please Provide Valid Data.</span>
+    </div>
+    <h2>All Ratings</h2>
+    <div class="row">
+
+        @foreach (var servieRating in Model.servieRatings)
+        {
+            <div class="col-md-4">
+                <div class="card customCard">
+                    <div class="card-body">
+                        <h5 class="card-title">@servieRating.serviceType.Split(';')[0]</h5>
+                        <p class="card-text">
+                            @Math.Floor((double)servieRating.rating)
+                            @for (int i = 0; i < Math.Floor((double)servieRating.rating); i++)
+                            {
+                                <span class="fa fa-star checked"></span>
+                            }
+                            based on @servieRating.serviceType.Split(';')[1] rating(s).
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <hr />
+    <div class="row" style="margin-top:-20px;">
+        <div class="form-group col-md-3" style="margin-top:20px;">
+            <label>Select Service Type</label>
+            <input readonly type="text" class="form-control" id="selector" />
+            <div id="options" style="background:white;">
+
+
+                @foreach (var service in Model.services)
+                {
+                    <label class="control-label" for="@service.name">
+                        @service.name
+                        <input type="checkbox" value="@service.name" name="@service.name" class="form-control checkbox serviceType" /><hr />
+                    </label>
+                }
+
+            </div>
+        </div>
+
+        <div class="form-group col-md-3" style="margin-top:20px;">
+
+
+            <label>Choose Reservation Date</label>
+            <input type="text" class="form-control" id="datetime" style="color:green !important;">
+            @*<input type="datetime-local" class="form-control" id="resDateTime" />*@
+            <div class="divider"></div>
+        </div>
+        <div class="form-group col-md-3">
+            <button class="btn btn-success submitBtn"><span><img src="~/Assets/scissors.png" /></span> Submit</button>
+        </div>
+
+    </div>
+    <hr />
+    <h1>Today's Reservation(s)</h1>
+    <table class="table table-hover table-bordered shadowed">
+        <tr id="thead">
+            <th>Image</th>
+            <th>Name</th>
+            <th>Reservation Type</th>
+            <th>Reservation Status</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Ratings</th>
+            <th>Action</th>
+        </tr>
+        @foreach (var reservation in Model.reservations)
+        {
+            <tr>
+                <td><img src="@reservation.profile" alt="img" height="25" width="25" class="img-circle" /></td>
+                <td>@reservation.uname</td>
+                <td>@reservation.services.Replace(",", " + ")</td>
+                <td>
+                    @if (reservation.status == 1)
+                    {
+                        <div class="btn btn-primary">Scheduled</div>
+                    }
+                    else if (reservation.status == 2)
+                    {
+                        <div class="btn btn-warning">In Progress</div>
+                    }
+                    else if (reservation.status == 3)
+                    {
+                        <div class="btn btn-success">Delivered</div>
+                    }
+                    else if (reservation.status == 0)
+                    {
+                        <div class="btn btn-danger">Cancelled</div>
+                    }
+                </td>
+                <td>@reservation.startDate.Value</td>
+                <td>@reservation.endDate.Value</td>
+                <td>
+                    @if (reservation.status == 3 && reservation.uid == Model.currentUser.userId)
+                    {
+                        <input type="hidden" class="@reservation.id" />
+                        <a data-toggle="modal" data-target="#exampleModal">
+                            <span class="fa fa-star"></span>
+                        </a>
+                    }
+                    else
+                    {
+                        <p></p>
+                    }
+                </td>
+                <td>
+                    @if (reservation.status != 3 && reservation.status != 0)
+                    {
+                        if (reservation.uid == Model.currentUser.userId)
+                        {
+                            <ul class="nav navbar-nav ml-auto">
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" style="cursor:pointer;margin-right:100px;" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <a style="cursor:pointer;" class="dropdown-item" onclick="changeStatus(0,@reservation.id)">Cancel</a>
+                                        <a style="cursor:pointer;" class="dropdown-item" onclick="changeStatus(2,@reservation.id)">In Progress</a>
+                                        <a style="cursor:pointer;" class="dropdown-item" onclick="changeStatus(3,@reservation.id)">Delivered</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        }
+                    }
+
+                </td>
+
+            </tr>
+        }
+    </table>
+
+</div>
+
+<script>
+    $(document).ready(() => {
+        $('#datetime').datetimepicker();
+        $('#show').click(() => {
+            console.log($('#datetime').val());
+        });
+        /*
+         hiding the alerts
+         */
+
+        $(".alert-success").hide();
+        $(".alert-danger").hide();
+
+        //global object of reservation
+        //which is updated by user when
+        // reserving the apointment
+        let reservation = {
+            uid: '',
+            uname: '',
+            profile: '',
+            services: '',
+            startDate: '',
+            endDate: '',
+            status: '',
+            changedBy: ''
+        };
+
+
+
+        //=====================
+        /* this section is all about the selection of services
+         * the section that toggles on clicking input field
+         *
+         * */
+        $("#options").hide();
+
+        $("#selector").click(() => {
+            $("#options").slideToggle(100);
+        })
+
+        $('body').click(function (e) {
+            var target = $(e.target);
+            if (!target.is('#selector') && !target.is(".checkbox")) {
+                $("#options").slideUp(100);
+            }
+        });
+        //=========================
+
+
+        //getting the services selected by user
+        //concating in strings seperated by commas
+        $(".serviceType")
+            .change(function () {
+                var str = "";
+                $("input[type='checkbox']:checked").each(function () {
+                    str += $(this).val() + " ,";
+                });
+                //console.log(str)
+                $("#selector").val(str);
+            })
+            .change();
+
+
+        //when clicking on submit button
+        //.replace("T", " ") + ":00"
+        $(".submitBtn").click(() => {
+            reservation.services = $("#selector").val().slice(0, -1);
+            reservation.startDate = $("#datetime").val();
+            reservation.uname = $("#uname").val();
+            reservation.profile = $("#dp").val();
+            reservation.uid = $("#uid").val();
+            reservation.status = '1';
+
+
+            //================
+            //showing loader when click on submit
+            $("body").css({
+                opacity: 0.5,
+                pointerEvents: 'none'
+            });
+
+            $("#loader").show();
+            //================
+
+
+            //sending a post request to server for reserving
+            //appointment
+            $.ajax({
+                url: "/Home/SaveReservation",
+                method: "POST",
+                data: reservation,
+                dataType: "json",
+                success: (response) => {
+
+                    //hiding loader
+                    $("body").css({
+                        opacity: 1,
+                        pointerEvents: ''
+                    });
+
+                    $("#loader").hide();
+                    //-----------------
+
+                    if (response === "1") {//success
+                        $(".alert-success").show();
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {//error and response contains
+                        //error type
+                        $("#errMsg").text(response);
+                        $(".alert-danger").show();
+                        setTimeout(() => {
+                            $(".alert-danger").hide();
+                        }, 1000);
+                    }
+
+                }
+            })
+        })
+
+        //creation of rating bar
+
+        //when hovered on star icon
+        //changing its all prevous stars color
+        //and its color
+        $(".input").mouseover(function () {
+            $(this).css({
+                color: 'orange'
+            });
+            $(this).prevAll().css({
+                color: 'orange'
+            });
+
+        });
+
+        //when mouse leaves the star icon
+        //changing back to black if its clicked
+        //and all its prevoius stars
+        $(".input").mouseleave(function () {
+            if ($(this).hasClass("clicked")) {
+                $(this).css({
+                    color: 'black'
+                });
+                $(this).prevAll().css({
+                    color: 'black'
+                });
+            }
+
+        });
+
+        //global ratings array
+        let allRatings = [];
+        //when clicked on any star permanantley
+        //change the stars color to orange and add/remove
+        //clicked class
+        $(".input").click(function () {
+            $(this).toggleClass("clicked");
+            $(this).prevAll().toggleClass("clicked");
+            $(this).css({
+                color: 'orange'
+            });
+            $(this).prevAll().css({
+                color: 'orange'
+            });
+
+            //current rating object of which star is clicked
+            let ratings = {
+                serviceType: $(this).attr("role"),
+                rating: $(this).prevAll().length + 1,
+                uid: $("#uid").val()
+            };
+
+            //removing the dubmicates and adding the latest one
+            allRatings.forEach((rating) => {
+                if (rating.serviceType === ratings.serviceType) {
+                    allRatings = allRatings.filter(x => x.serviceType != rating.serviceType);
+                }
+            });
+
+
+            //pushing that object in global array
+            allRatings.push(ratings);
+
+
+        });
+
+        //sending a post request to server to save the ratings
+        // of all services.
+        $("#saveRatings").click(() => {
+            console.log(allRatings);
+            $.ajax({
+                url: "/Home/SaveRatings",
+                method: "POST",
+                data: { servieRatings: allRatings },
+                dataType: "json",
+                success: (response) => {
+                    window.location.reload();
+                }
+            })
+        });
+
+    });
+
+
+    const changeStatus = (status, id) => {
+        //loader
+        $("body").css({
+            opacity: 0.5,
+            pointerEvents: 'none'
+        });
+
+        $("#loader").show();
+        //------------------
+
+
+        //changing status of reservation by sending the get request to
+        //server like to "inprogress" , "cancelled" etc.
+
+        $.ajax({
+            url: `/Home/ChangeStatus?status=${status}&id=${id}`,
+            method: "GET",
+            dataType: "json",
+            success: (response) => {
+                $("body").css({
+                    opacity: 1,
+                    pointerEvents: ''
+                });
+
+                $("#loader").hide();
+                if (response == "err") {
+                    alert("Invalid Request Parameters");
+                } else {
+                    window.location.reload();
+                }
+
+
+            }
+        })
+    }
+
+
+
+</script>

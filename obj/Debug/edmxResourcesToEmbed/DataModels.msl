@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="barberModelStoreContainer" CdmEntityContainer="barberEntities">
+    <EntitySetMapping Name="reservations">
+      <EntityTypeMapping TypeName="barberModel.reservation">
+        <MappingFragment StoreEntitySet="reservation">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="uid" ColumnName="uid" />
+          <ScalarProperty Name="uname" ColumnName="uname" />
+          <ScalarProperty Name="profile" ColumnName="profile" />
+          <ScalarProperty Name="services" ColumnName="services" />
+          <ScalarProperty Name="startDate" ColumnName="startDate" />
+          <ScalarProperty Name="endDate" ColumnName="endDate" />
+          <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="changedBy" ColumnName="changedBy" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Services">
+      <EntityTypeMapping TypeName="barberModel.Service">
+        <MappingFragment StoreEntitySet="Services">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="name" ColumnName="name" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="servieRatings">
+      <EntityTypeMapping TypeName="barberModel.servieRating">
+        <MappingFragment StoreEntitySet="servieRatings">
+          <ScalarProperty Name="rid" ColumnName="rid" />
+          <ScalarProperty Name="uid" ColumnName="uid" />
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="rating" ColumnName="rating" />
+          <ScalarProperty Name="serviceType" ColumnName="serviceType" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

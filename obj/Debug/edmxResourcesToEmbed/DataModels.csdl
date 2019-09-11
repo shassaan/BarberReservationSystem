@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="barberModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="reservation">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="uid" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="uname" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+    <Property Name="profile" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+    <Property Name="services" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+    <Property Name="startDate" Type="DateTime" Precision="3" />
+    <Property Name="endDate" Type="DateTime" Precision="3" />
+    <Property Name="status" Type="Int32" />
+    <Property Name="changedBy" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="Service">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="name" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="servieRating">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="rating" Type="Double" />
+    <Property Name="serviceType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="uid" Type="Int32" />
+    <Property Name="rid" Type="Int32" />
+  </EntityType>
+  <EntityContainer Name="barberEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="reservations" EntityType="Self.reservation" />
+    <EntitySet Name="Services" EntityType="Self.Service" />
+    <EntitySet Name="servieRatings" EntityType="Self.servieRating" />
+  </EntityContainer>
+</Schema>
