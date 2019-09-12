@@ -124,7 +124,7 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" id="saveRatings">Save changes</button>
+                <button type="button" class="btn btn-success" id="saveRatings">Save changes</button>
             </div>
         </div>
     </div>
@@ -142,7 +142,6 @@
     </div>
 
     <div class="alert alert-danger alert-dismissible">
-
         <strong>Invalid !</strong> <span id="errMsg">Please Provide Valid Data.</span>
     </div>
     <h2>All Ratings</h2>
@@ -173,8 +172,6 @@
             <label>Select Service Type</label>
             <input readonly type="text" class="form-control" id="selector" />
             <div id="options" style="background:white;">
-
-
                 @foreach (var service in Model.services)
                 {
                     <label class="control-label" for="@service.name">
@@ -182,7 +179,6 @@
                         <input type="checkbox" value="@service.name" name="@service.name" class="form-control checkbox serviceType" /><hr />
                     </label>
                 }
-
             </div>
         </div>
 
@@ -220,29 +216,30 @@
                 <td>@reservation.services.Replace(",", " + ")</td>
                 <td>
                     @if (reservation.status == 1)
-                    {
+        {
                         <div class="btn btn-primary">Scheduled</div>
-                    }
-                    else if (reservation.status == 2)
-                    {
+        }
+        else if (reservation.status == 2)
+        {
                         <div class="btn btn-warning">In Progress</div>
-                    }
-                    else if (reservation.status == 3)
-                    {
+        }
+        else if (reservation.status == 3)
+        {
                         <div class="btn btn-success">Delivered</div>
-                    }
-                    else if (reservation.status == 0)
-                    {
+        }
+        else if (reservation.status == 0)
+        {
                         <div class="btn btn-danger">Cancelled</div>
-                    }
+        }
                 </td>
                 <td>@reservation.startDate.Value</td>
                 <td>@reservation.endDate.Value</td>
                 <td>
-                    @if (reservation.status == 3 && reservation.uid == Model.currentUser.userId)
+                    @{var res = Model.allRatings.Where(s => s.rid == reservation.id).FirstOrDefault();}
+                    @if (reservation.status == 3 && reservation.uid == Model.currentUser.userId && res == null)
                     {
                         <input type="hidden" class="@reservation.id" />
-                        <a data-toggle="modal" data-target="#exampleModal">
+                        <a data-toggle="modal" onclick="getReservationId(@reservation.id)" data-target="#exampleModal">
                             <span class="fa fa-star"></span>
                         </a>
                     }
@@ -278,7 +275,43 @@
 
 </div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <script>
+    let reservationId = 0;
     $(document).ready(() => {
         $('#datetime').datetimepicker();
         $('#show').click(() => {
@@ -304,6 +337,8 @@
             status: '',
             changedBy: ''
         };
+
+        
 
 
 
@@ -443,12 +478,13 @@
             $(this).prevAll().css({
                 color: 'orange'
             });
-
+            console.log(reservationId)
             //current rating object of which star is clicked
             let ratings = {
                 serviceType: $(this).attr("role"),
                 rating: $(this).prevAll().length + 1,
-                uid: $("#uid").val()
+                uid: $("#uid").val(),
+                rid: reservationId
             };
 
             //removing the dubmicates and adding the latest one
@@ -457,7 +493,7 @@
                     allRatings = allRatings.filter(x => x.serviceType != rating.serviceType);
                 }
             });
-
+            
 
             //pushing that object in global array
             allRatings.push(ratings);
@@ -481,6 +517,10 @@
         });
 
     });
+
+    const getReservationId = (id) => {
+        reservationId = id;
+    }
 
 
     const changeStatus = (status, id) => {

@@ -9,6 +9,7 @@ namespace BarberReservationSystem.ViewModels
     public class MainPageViewModel
     {
         public List<servieRating> servieRatings { get; set; }
+        public List<servieRating> allRatings { get; set; }
         public List<reservation> reservations { get; set; }
 
         public List<Service> services { get; set; }

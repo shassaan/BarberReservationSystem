@@ -49,6 +49,7 @@ namespace BarberReservationSystem.Controllers
             //creating the list of service ratings and copying group by results to service
             //rating list
             List<servieRating> serviceRatings = new List<servieRating>();
+            var allServiceRatings = _db.servieRatings.ToList();
             foreach (var rat in ratings)
             {
                 serviceRatings.Add(new servieRating
@@ -65,7 +66,8 @@ namespace BarberReservationSystem.Controllers
                 currentUser = u,
                 reservations = res,
                 services = serv,
-                servieRatings = serviceRatings
+                servieRatings = serviceRatings,
+                allRatings = allServiceRatings
             };
 
             return View(model);
