@@ -216,32 +216,39 @@
                 <td>@reservation.services.Replace(",", " + ")</td>
                 <td>
                     @if (reservation.status == 1)
-        {
+                    {
                         <div class="btn btn-primary">Scheduled</div>
-        }
-        else if (reservation.status == 2)
-        {
+                    }
+                    else if (reservation.status == 2)
+                    {
                         <div class="btn btn-warning">In Progress</div>
-        }
-        else if (reservation.status == 3)
-        {
+                    }
+                    else if (reservation.status == 3)
+                    {
                         <div class="btn btn-success">Delivered</div>
-        }
-        else if (reservation.status == 0)
-        {
+                    }
+                    else if (reservation.status == 0)
+                    {
                         <div class="btn btn-danger">Cancelled</div>
-        }
+                    }
                 </td>
                 <td>@reservation.startDate.Value</td>
                 <td>@reservation.endDate.Value</td>
                 <td>
                     @{var res = Model.allRatings.Where(s => s.rid == reservation.id).FirstOrDefault();}
-                    @if (reservation.status == 3 && reservation.uid == Model.currentUser.userId && res == null)
+                    @if (reservation.status == 3 && reservation.uid == Model.currentUser.userId)
                     {
-                        <input type="hidden" class="@reservation.id" />
-                        <a data-toggle="modal" onclick="getReservationId(@reservation.id)" data-target="#exampleModal">
-                            <span class="fa fa-star"></span>
-                        </a>
+                        if (res == null)
+                        {
+                            <input type="hidden" class="@reservation.id" />
+                            <a data-toggle="modal" onclick="getReservationId(@reservation.id)" data-target="#exampleModal">
+                                <span class="fa fa-star"></span>
+                            </a>
+                        }
+                        else
+                        {
+                            <p class="text text-success text-capitalize">Rated</p>
+                        }
                     }
                     else
                     {
